@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,6 +9,23 @@
             const response = await fetch('/api/ikasleak');
             const data = await response.json();
             document.getElementById('ikasleak').innerText = JSON.stringify(data, null, 2);
+            
+            const emailBox = document.getElementById('emailBox');
+            emailBox.innerHTML = '';
+
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = 'Choose an ikasle';
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            emailBox.appendChild(defaultOption);
+
+            data.forEach(ikasle => {
+                const option = document.createElement('option');
+                option.value = ikasle._id; 
+                option.textContent = ikasle.email;
+                emailBox.appendChild(option);
+            });
         }
 
         async function createIkasle() {
@@ -27,22 +43,59 @@
 
             const data = await response.json();
             document.getElementById('newIkasle').innerText = JSON.stringify(data, null, 2);
+            fetchIkasleak()
         }
 
-        async function deleteIkasle() {
-        const id = document.getElementById("deleteId").value;
+        async function deleteIkasleById() {
+            const id = document.getElementById("DeleteIzena").value;
 
-        const response = await fetch(`/api/ikasleak/${id}`, {
-          method: "DELETE",
-        });
+            const response = await fetch(`/api/ikasleak/${id}`, {
+                method: "DELETE",
+            });
 
-        const data = await response.json();
-        document.getElementById("deletedIkasle").innerText = JSON.stringify(
-          data,
-          null,
-          2
-        );
-      }
+            const data = await response.json();
+            document.getElementById("deletedIkasle").innerText = JSON.stringify(data, null, 2);
+            fetchIkasleak()
+        }
+
+        async function editIkasleById() {
+            const id = document.getElementById('emailBox').value;
+            const izena = document.getElementById('EditIzena').value;
+            const adina = document.getElementById('EditAdina').value;
+            const email = document.getElementById('EditEmail').value;
+
+            if (!id) {
+                alert('Please select an ikasle to edit.');
+                return;
+            }
+
+            const response = await fetch(`/api/ikasleak/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ izena, adina, email }),
+            });
+
+            const data = await response.json();
+            document.getElementById('editedIkasle').innerText = JSON.stringify(data, null, 2);
+
+            const emailBox = document.getElementById('emailBox');
+            emailBox.innerHTML = "";
+            fetchIkasleak()
+        }
+
+        async function fillEditForm() {
+            const id = document.getElementById('emailBox').value;
+            if (!id) return;
+
+            const response = await fetch(`/api/ikasleak/${id}`);
+            const data = await response.json();
+
+            document.getElementById('EditIzena').value = data.izena;
+            document.getElementById('EditAdina').value = data.adina;
+            document.getElementById('EditEmail').value = data.email;
+        }
     </script>
 </head>
 <body>
@@ -64,14 +117,34 @@
         <button type="submit">Create</button>
     </form>
     <pre id="newIkasle"></pre>
+
     <h2>Delete Ikasle</h2>
-    <form onsubmit="event.preventDefault(); createIkasle();">
-        <label for="id">Id:</label>
-        <input type="text" id="id" name="id" required>
+    <form onsubmit="event.preventDefault(); deleteIkasleById();">
+        <label for="izena">IkasleID:</label>
+        <input type="text" id="DeleteIzena" name="izena" required>
         <br>
         <button type="submit">Delete</button>
     </form>
+    <pre id="deletedIkasle"></pre>
 
-    <div id="deletedIkasle"></div>
+    <h2>Edit Ikasle</h2>
+    <form onsubmit="event.preventDefault(); editIkasleById();">
+        <label for="emailBox">Ikasle Email:</label>
+        <select id="emailBox" onchange="fillEditForm()">
+            <option value="" disabled selected>Choose an ikasle</option>
+        </select>
+        <br>
+        <label for="izena">Izena:</label>
+        <input type="text" id="EditIzena" name="izena" required>
+        <br>
+        <label for="adina">Adina:</label>
+        <input type="number" id="EditAdina" name="adina" required>
+        <br>
+        <label for="email">Email:</label>
+        <input type="email" id="EditEmail" name="email" required>
+        <br>
+        <button type="submit">Edit</button>
+    </form>
+    <pre id="editedIkasle"></pre>
 </body>
 </html>

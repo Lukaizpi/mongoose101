@@ -28,6 +28,6 @@ ikasleSchema.pre('save', function(next) {
 
 ikasleSchema.path('email').validate(function(email) {
     return email.includes('@');
-  }, 'Email-ak @ izan behar du');
+}, 'Email-ak @ izan behar du');
   
 module.exports = mongoose.model('Ikasle', ikasleSchema);
