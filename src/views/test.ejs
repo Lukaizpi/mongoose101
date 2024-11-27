@@ -28,6 +28,21 @@
             const data = await response.json();
             document.getElementById('newIkasle').innerText = JSON.stringify(data, null, 2);
         }
+
+        async function deleteIkasle() {
+        const id = document.getElementById("deleteId").value;
+
+        const response = await fetch(`/api/ikasleak/${id}`, {
+          method: "DELETE",
+        });
+
+        const data = await response.json();
+        document.getElementById("deletedIkasle").innerText = JSON.stringify(
+          data,
+          null,
+          2
+        );
+      }
     </script>
 </head>
 <body>
@@ -49,5 +64,14 @@
         <button type="submit">Create</button>
     </form>
     <pre id="newIkasle"></pre>
+    <h2>Delete Ikasle</h2>
+    <form onsubmit="event.preventDefault(); createIkasle();">
+        <label for="id">Id:</label>
+        <input type="text" id="id" name="id" required>
+        <br>
+        <button type="submit">Delete</button>
+    </form>
+
+    <div id="deletedIkasle"></div>
 </body>
 </html>
