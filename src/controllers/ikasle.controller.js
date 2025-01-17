@@ -31,4 +31,29 @@ exports.getIkasleById = async (req, res, next) => {
     }
 };
 
+exports.deleteIkasleById = async (req, res, next) => {
+    try{
+        const ikasle = await Ikasle.findByIdAndDelete(req.params.id);
+        if (!ikasle){
+            return res.status(404).send('Ez da ikaslea aurkitu');
+        }
+        res.json(ikasle);
+    }catch(error){
+        next(error);
+    }
+
+}
+
+exports.editIkasleakById = async (req, res, next) => {
+    try {
+        const ikasleak = await Ikasle.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+        if (!ikasleak){
+            res.send('Errorea')
+        }
+        res.json(ikasleak)
+    } catch (error) {
+        next(error);
+    }
+};
+
 // Gehitu beste kontroladoreak...
